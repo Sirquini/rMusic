@@ -55,23 +55,19 @@ class Client
 	def check_alvie
 		@keepAlive = Thread.new do
 			loop do
-				res = IO.select([@server], nil, nil, @maxSeconds)
+				res = IO.select([@server], [@server], nil, @maxSeconds)
 				if res != nil
 					# Aceptamos el socket
 					slave_server = @server.accept
-					# Enviamos un mensaje vacio
-					slave_server.puts ""
+					# Enviamos un mensaje
+					slave_server.puts "1"
 					# Cerramos la conexion
 					slave_server.close
 				else
-					puts "Reconectando..."
-					@request.kill
-					@response.kill
-					server.close
-					reconect
+					cleanup
 				end
-				sleep(@maxSeconds)
 			end
+			sleep(@maxSeconds)
 		end
 	end
 
