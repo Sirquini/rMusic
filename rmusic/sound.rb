@@ -1,37 +1,35 @@
-module WinSound
-	require 'win32/sound'
-	include Win32
+require_relative 'platform'
+include PlatformrM
+require_relative "adapter/#{LIB}"
+include Adapter
 
-	def play_sound(freq = 100, time = 500)
-		Sound.beep(freq, time) 
-	end
-
+module RMSound
 	NOTES_KEYS = {
-		q: 100,
-		w: 200,
-		e: 300,
-		r: 400,
-		t: 500,
-		y: 600,
-		u: 700,
-		i: 800,
-		o: 900,
-		p: 1000,
-		a: 1100,
-		s: 1200,
-		d: 1300,
-		f: 1400,
-		g: 1500,
-		h: 1600,
-		j: 1700,
-		k: 1800,
-		l: 1900
+		q: 1000,
+		w: 1100,
+		e: 1200,
+		r: 1300,
+		t: 1400,
+		y: 1500,
+		u: 1600,
+		i: 1700,
+		o: 1800,
+		p: 1900,
+		a: 100,
+		s: 200,
+		d: 300,
+		f: 400,
+		g: 500,
+		h: 600,
+		j: 700,
+		k: 800,
+		l: 900
 	}
 
 	def note_play(char)
 		freq = nil
 		freq = NOTES_KEYS[char.to_sym] unless NOTES_KEYS[char.to_sym] == nil
-		play_sound(freq) unless freq == nil
+		Adapter::play_sound(freq) unless freq == nil
 		freq != nil
 	end
 

@@ -1,7 +1,7 @@
 require 'socket'
 require_relative 'rmusic/conexiones'
 require_relative 'rmusic/sound'
-include WinSound
+include RMSound
 
 class Client
 	def initialize(server)
@@ -43,7 +43,6 @@ class Client
 				message = @server.gets.chomp
 				# Optenemos el tipo
 				message_t = message[0]
-				puts message_t
 				# Quitamos los dos primeros caracteres
 				message.slice!(0..1)
 				# Revisamos si es un mensaje o una nota a reproducir
@@ -53,7 +52,7 @@ class Client
 				elsif message_t == "n"
 					# Tomamos solo la nota y reproducimos su equivalente
 					# Reproducimos la nota musical
-					puts "Nota no valida [q-p][a-l]!" unless WinSound::note_play(message[0])
+					puts "Nota no valida [q-p][a-l]!" unless RMSound::note_play(message[0])
 
 				else
 					# Mostramos el mensaje en consola

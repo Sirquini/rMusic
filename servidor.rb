@@ -50,7 +50,6 @@ class Server
 			break if client.eof?
 			# optenemos el mensaje del cliente
 			message = client.gets.chomp
-			puts message
 			# lo retransmitimos a todos los demas clientes
 			broadcast(message)
 		end
