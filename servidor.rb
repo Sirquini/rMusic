@@ -58,8 +58,13 @@ class Server
 			break if client.eof?
 			# optenemos el mensaje del cliente
 			message = client.gets.chomp
-			# lo retransmitimos a todos los demas clientes
-			broadcast(message)
+			# Revisamos si es un mensaje
+			if message[0] == "r"
+				broadcast_message(message, client)
+			else
+				# lo retransmitimos a todos los demas clientes
+				broadcast(message)
+			end
 		end
 	end
 
@@ -67,6 +72,13 @@ class Server
 	def broadcast(message)
 		@clients.each do |client|
 			client.puts message
+		end
+	end
+
+	# Envia un mensaje a todos menos al usuario que envio el mensaje
+	def broadcast_message(message, rclient)
+		@clients.each do |client|
+			client.puts message unless client == rclient
 		end
 	end
 
@@ -114,7 +126,7 @@ user_sync = false
 puts "Por Favor ingrese una ip o df:"
 user_input = gets.chomp
 user_ip = user_input unless user_input == "df"
-user_ip ||= "192.168.1.2"
+user_ip ||= "127.0.0.1"
 
 puts "Desea sincronizar servidores, solo funciona en el servidor maestro [y/n]:"
 user_input = gets.chomp

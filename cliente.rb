@@ -4,7 +4,7 @@ require_relative 'rmusic/sound'
 include RMSound
 
 class Client
-	def initialize(server)
+	def initialize(server, nick)
 		@server = server
 		@arry_ips = Connections::SERVER_IP
 		@ip_integrity = "d"
@@ -13,6 +13,7 @@ class Client
 		@keepAlive = nil
 		@maxSeconds = 10
 		@ip_pos = 0
+		@nick = nick
 		# Empezamos a escuchar al servidor
 		listen
 		# Empezamos a enviar al servidor
@@ -52,9 +53,13 @@ class Client
 				if  message == "exit"
 					@response.kill
 					break
+				elsif message.length > 1
+					# Si la entrada no es una nota, sino un mensaje de chat
+					@server.puts("r " << @nick << ": " <<  message)
+				else
+					# Adicionamos que es una nota y lo enviamos al servidor
+					@server.puts("n " << message) unless message.empty?
 				end
-				# Adicionamos que es una nota y lo enviamos al servidor
-				@server.puts("n " << message) unless message.empty?
 			end
 		end
 	end
@@ -99,6 +104,8 @@ class Client
 						@ip_integrity = "m"
 						@arry_ips = message.split(' ')
 					end
+				elsif message_t == "r"
+					puts message
 				else
 					# Mostramos el mensaje en consola
 					puts "Desconocido: " << message
@@ -108,7 +115,10 @@ class Client
 	end
 end
 
+# Escogemos un nick para identificarnos
+puts "Ingresar un nick:"
+user_input = gets.chomp
 # Creamos el sockect de conexion
 server = TCPSocket.new(Connections::SERVER_IP[0], Connections::SERVER_PORT)
 # Corremos el cliente
-cliente = Client.new server
+cliente = Client.new(server, user_input)
