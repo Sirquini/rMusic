@@ -10,6 +10,9 @@ class Client
 		@ip_integrity = "d"
 		@request = nil
 		@response = nil
+		@keepAlive = nil
+		@maxSeconds = 10
+		@ip_pos = 0
 		# Empezamos a escuchar al servidor
 		listen
 		# Empezamos a enviar al servidor
@@ -18,6 +21,25 @@ class Client
 		@request.join if @request.alive?
 		@response.join if @response.alive?
 		@server.close
+	end
+
+	# Metodo para revisar la conexion despues de x tiempo
+	def reconect
+		if @arry_ips.length == 0
+			@arry_ips =  Connections::SERVER_IP
+		elsif @arry_ips.length != Connections::SERVER_IP.length && @ip_integrity != "m"
+			@arry_ips =  Connections::SERVER_IP
+		end
+		@ip_pos += 1
+		@ip_pos = 0 if @ip_pos >= @arry_ips.length
+		begin
+			@server = TCPSocket.new(@arry_ips[@ip_pos], Connections::SERVER_PORT)
+			send
+		rescue Errno::ECONNRESET => e
+			reconect
+		end
+
+
 	end
 
 	# Metodo para enviar informacion al servidor
@@ -41,6 +63,12 @@ class Client
 	def listen
 		@response = Thread.new do
 			loop do
+				# Revisamos si se cerro la conexion
+				# @server.eof?
+				# @request.kill
+				# @server.close
+				# puts "Reconectando..."
+				# reconect
 				# Optenemos el mensaje del servidor
 				message = @server.gets.chomp
 				# Optenemos el tipo

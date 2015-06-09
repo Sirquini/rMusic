@@ -38,7 +38,7 @@ class Server
 				conection.puts "i Conexion establecida"
 				# Enviamos la lista de servidores
 				conection.puts "m " << Connections::SERVER_IP.join(" ") if @master
-				conection.puts "l " << @arry_ips.join(" ") if @master
+				conection.puts "s " << @arry_ips.join(" ") unless @master
 				# Escuchamos los mensajes de la conexion
 				listen_user(conection)
 				# Quitamos la conexion
@@ -95,7 +95,7 @@ class Server
 
 	# Recibe una lista de servidores del servidor maestro
 	def listen_servers
-		unless @master && @sync
+		unless @master && !@sync
 			puts "Sincronizando lista de servidores"
 			miniSocket = TCPSocket.new(Connections::SERVER_IP[0], @port+1)
 			# Resivimos la lista de Servidores
