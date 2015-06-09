@@ -6,6 +6,8 @@ include RMSound
 class Client
 	def initialize(server)
 		@server = server
+		@arry_ips = Connections::SERVER_IP
+		@ip_integrity = "d"
 		@request = nil
 		@response = nil
 		# Empezamos a escuchar al servidor
@@ -46,14 +48,29 @@ class Client
 				# Quitamos los dos primeros caracteres
 				message.slice!(0..1)
 				# Revisamos si es un mensaje o una nota a reproducir
-				if message_t == "m"
+				if message_t == "i"
 					# Mostramos el mensaje en consola
 					puts message
 				elsif message_t == "n"
 					# Tomamos solo la nota y reproducimos su equivalente
 					# Reproducimos la nota musical
 					puts "Nota no valida [q-p][a-l]!" unless RMSound::note_play(message[0])
-
+				elsif message_t == "s"
+					# Resivimos una lista de ips de un esclavo
+					# Actualizamos la lista interna si esta por defecto
+					if @ip_integrity == "d"
+						puts "Lista de IPs actualizada"
+						@ip_integrity = "s"
+						@arry_ips = message.split(' ')
+					end
+				elsif message_t == "m"
+					# Resivimos una lista de ips de un maestro
+					# Actualizamos la lista interna si esta por defecto
+					if @ip_integrity != "m"
+						puts "Lista de IPs actualizada"
+						@ip_integrity = "m"
+						@arry_ips = message.split(' ')
+					end
 				else
 					# Mostramos el mensaje en consola
 					puts "Desconocido: " << message
