@@ -13,6 +13,7 @@ class Server
 		@serverSocket.setsockopt( Socket::SOL_SOCKET, Socket::SO_REUSEADDR, 1 )
 		@server = server
 		@port = port
+		@master? = server == Connections::SERVER_IP[0]
 		@clients = []
 		puts "Server started on port #{port}"
 	end
@@ -31,6 +32,8 @@ class Server
 				puts "Conexion #{conection}"
 				# Avisamos de la conexion exitosa
 				conection.puts "m Conexion establecida"
+				# Enviamos la lista de servidores
+				conection.puts "m " << Connections::SERVER_IP.join(" ") if @master?
 				# Escuchamos los mensajes de la conexion
 				listen_user(conection)
 				# Quitamos la conexion
@@ -64,6 +67,6 @@ class Server
 end
 
 # Inicialmente el puerto a escuchar, por defecto es el 2701
-servidor = Server.new("localhost", Connections::SERVER_PORT)
+servidor = Server.new("192.168.1.2", Connections::SERVER_PORT)
 # Corremos el servidor
 servidor.run
