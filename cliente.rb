@@ -212,7 +212,7 @@ while !cliente.exit
 			cliente.reconected(server)
 			puts "Reconectado!"
 			cliente.run
-		rescue Errno::ECONNREFUSED => e
+		rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT
 			sleep(1)
 		end
 	end	

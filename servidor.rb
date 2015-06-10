@@ -109,7 +109,12 @@ class Server
 	def listen_servers
 		unless @master && !@sync
 			puts "Sincronizando lista de servidores"
-			miniSocket = TCPSocket.new(Connections::SERVER_IP[0], @port+1)
+			begin
+				miniSocket = TCPSocket.new(Connections::SERVER_IP[0], @port+1)
+			rescue Errno::ETIMEDOUT => e
+				puts "No se pudo relizar la Sincronizacion"
+				return nil
+			end
 			# Resivimos la lista de Servidores
 			res = IO.select([miniSocket], [miniSocket], nil, 10)
 			if res != nil
